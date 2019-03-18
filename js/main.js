@@ -19,7 +19,7 @@ jQuery(function () {
             {
                 'q': 'какой сегодня день недели',
                 'a': (new Date).toLocaleString('ru', {weekday: 'long'}),
-                'v': ['full name weekday, russian please '], /*варианты*/
+                'v': ['full name weekday, russian please '], /*нулевой  используется в качестве  текста перед полем ввода*/
                 't': 2
             },
         ], /*список  вопросов*/
