@@ -10,6 +10,18 @@ jQuery(function () {
             'v': ['нет', 'это не возможно', 'не уверен', 'не знаю'], /*варианты*/
             't': 1
         },
+            {
+                'q': 'JavaScript это',
+                'a': 'JavaScript — мультипарадигменный язык программирования. Поддерживает объектно-ориентированный, императивный и функциональный стили. Является реализацией языка ECMAScript. JavaScript обычно используется как встраиваемый язык для программного доступа к объектам приложений.',
+                'v': ['Прототипно-ориентированный скриптовый язык программирования', 'Объектно-ориентированный скриптовый язык программирования', 'Скриптовой язык программирования',], /*варианты*/
+                't': 1
+            },
+            {
+                'q': 'какой сегодня день недели',
+                'a': (new Date).toLocaleString('ru', {weekday: 'long'}),
+                'v': ['full name weekday, russian please '], /*варианты*/
+                't': 2
+            },
         ], /*список  вопросов*/
         next = $('#next')/*кнопка далее*/,
         Questions = $('#Questions') /*область вопросов*/,
@@ -43,6 +55,22 @@ jQuery(function () {
                 })
             } else if (type == 2) {
 
+                let v = Question.v[0]/*эот  будет  использоваться для  лабел */, li = $('<li class="form-group"/>'),
+                    label = $('<label>'), inp = $('<textarea>'),
+                    id = 'Question_' + current + '_answer_' + 0;
+
+                label.attr({'for': id}).text(v)
+                inp.attr({
+                    'class': 'form-control',
+                    'type': type,
+                    'id': id,
+                    'name': 'Question[' + current + ']',
+                    'value': ''
+                });
+                li.append(label)
+                li.append(inp)
+                list.append(li)
+
             }
             else {
             }
@@ -75,6 +103,9 @@ jQuery(function () {
                         Items.push('<li>' + Dict[key].v[xach[2]] + '</li>')
                     })
                     A = '<ul>' + Items.join('\n') + '</ul>';
+                }
+                else if (type == 2) {
+                    A = answer
                 }
                 tr = $('<tr/>')
                 tr = tr.append(($('<td/>').text(Dict[key].q)))// вопрос
