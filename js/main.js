@@ -2,7 +2,7 @@ jQuery(function () {
     var Dict = [{
             'q': 'как называется наша галактика?', /*вопрос*/
             'a': 'млечный путь', /*ответ*/
-            'v': ['андромеда', 'проксима', 'абракадабра', 'всмысле галактика  ? О_о  земля же плоская!'], /*варианты*/
+            'v': ['андромеда', 'проксима', 'абракадабра', 'всмысле галактика  ? О_о  земля же плоская!', 'млечный путь'], /*варианты*/
             't': 0/*тип вопроса*/
         }, {
             'q': 'семь красных линий зеленым цветом нарисуешь?а перпендикулярных',
@@ -31,7 +31,7 @@ jQuery(function () {
             wrapper = $('<form class="wrapper form-"  data-current="' + current + '"/>');
             p = $('<p/>');
             list = $('<ul />'); //html элемент со списком ответов
-            ;
+            LI = [];
             p.html('<strong>' + Question.q + '</strong>');
             if (type == 0 || type == 1) {
                 types = ['radio', 'checkbox'];
@@ -51,8 +51,10 @@ jQuery(function () {
                     });
                     li.append(label)
                     li.append(inp)
-                    list.append(li)
+                    LI.push(li)
+
                 })
+                list.append(Shuffle(LI))// перемесим
             } else if (type == 2) {
 
                 let v = Question.v[0]/*эот  будет  использоваться для  лабел */, li = $('<li class="form-group"/>'),
@@ -88,15 +90,16 @@ jQuery(function () {
             });
             table.append(tr);
             $.each(Result, function (i, v) {
-
+                let status = false /*правильно нет ? по  умолчанию не  правильно*/;
                 answer = typeof v.result == 'object' && v.result.length > 0 && typeof v.result[0].value !== 'undefined' ? v.result[0].value : false;
                 key = i - 1;
                 if (typeof Dict[key] == 'undefined')
                     return true;//нет  такого вопроса
                 type = 't' in Dict[key] ? Dict[key].t : 0;
-                if (type == 0) {
+                if (type == 0) {//radio
                     A = Dict[key].v[answer]
-                } else if (type == 1) {
+                    status = A.replace(/\s*/, ' ').toLocaleLowerCase() == Dict[key].a.replace(/\s*/, ' ').toLocaleLowerCase()
+                } else if (type == 1) {//checkbox
                     let Items = []
                     $.each(v.result, (ii, vv) => {/*сттрелочная функция, фишка 2018*/
                         xach = vv.name.match(/(.+)]\[(\d+)\]/)//регулярное выражение вырезает  последний номер в квадратных скобках из  имени
@@ -104,10 +107,12 @@ jQuery(function () {
                     })
                     A = '<ul>' + Items.join('\n') + '</ul>';
                 }
-                else if (type == 2) {
+                else if (type == 2) {// textarea
                     A = answer
+                    status = A.replace(/\s*/, ' ').toLocaleLowerCase() == Dict[key].a.replace(/\s*/, ' ').toLocaleLowerCase()
                 }
                 tr = $('<tr/>')
+                tr.attr('class', status ? 'table-success' : 'table-danger')
                 tr = tr.append(($('<td/>').text(Dict[key].q)))// вопрос
                 tr = tr.append(($('<td/>').text(Dict[key].a)))//правильный овет
                 tr = tr.append(($('<td/>').html(A)))//ваш ответ
@@ -126,7 +131,13 @@ jQuery(function () {
             }
             create(Dict[current++]);
 
+        }, compareRandom = function (a, b)/*штучка для перемешивания*/ {
+            return Math.random() - 0.5;
+
         }
+        , Shuffle = function (arr)/*мешалка*/ {
+            return arr.sort(compareRandom);
+        };
     //вешаем событие на кнопку  далее
     next.on('click', goNext)
 
