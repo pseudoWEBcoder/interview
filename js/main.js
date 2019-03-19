@@ -97,8 +97,8 @@ jQuery(function () {
                     return true;//нет  такого вопроса
                 type = 't' in Dict[key] ? Dict[key].t : 0;
                 if (type == 0) {//radio
-                    A = Dict[key].v[answer]
-                    status = A.replace(/\s*/, ' ').toLocaleLowerCase() == Dict[key].a.replace(/\s*/, ' ').toLocaleLowerCase()
+                    A = Dict[key].v[answer] || ''
+                    status = A.toString().replace(/\s*/, ' ').toLocaleLowerCase() == Dict[key].a.replace(/\s*/, ' ').toLocaleLowerCase()
                 } else if (type == 1) {//checkbox
                     let Items = []
                     $.each(v.result, (ii, vv) => {/*сттрелочная функция, фишка 2018*/
@@ -108,16 +108,23 @@ jQuery(function () {
                     A = '<ul>' + Items.join('\n') + '</ul>';
                 }
                 else if (type == 2) {// textarea
-                    A = answer
-                    status = A.replace(/\s*/, ' ').toLocaleLowerCase() == Dict[key].a.replace(/\s*/, ' ').toLocaleLowerCase()
+                    A = answer || ''
+
+                    status = A.toString().replace(/\s*/, ' ').toLocaleLowerCase() == Dict[key].a.replace(/\s*/, ' ').toLocaleLowerCase()
                 }
                 tr = $('<tr/>')
                 tr.attr('class', status ? 'table-success' : 'table-danger')
                 tr = tr.append(($('<td/>').text(Dict[key].q)))// вопрос
                 tr = tr.append(($('<td/>').text(Dict[key].a)))//правильный овет
                 tr = tr.append(($('<td/>').html(A)))//ваш ответ
+
                 table.append(tr)
+
+
             });
+            tr = $('<tr/>')
+            tr = tr.append(($('<td colspan="3"/>').html('<ul><li class="text-success">правильно <code  class="text-success">' + table.find('tr.table-success').length + '</code></li><li class="text-danger"> не правильно <code>' + table.find('tr.table-danger').length + '</code></li>' + '<li class="text-info"> всего <code>' + (table.find('tr').length - 1) + '</code></li></ul>')))
+            table.append(tr)
             Questions.html(table[0].outerHTML);
         }, Result = [],     //массив  результатов
         goNext = function ()/*функция обработки перехода на следующий шаг*/ {
